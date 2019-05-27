@@ -87,7 +87,8 @@ public class Main {
                     try {
                         tempPath = String.valueOf(f.getAbsoluteFile());
                         Mp3File mp3file = new Mp3File(f.getAbsoluteFile());
-
+						obsoleteStage(mp3file);
+						  
                         if (mp3file.getId3v2Tag().getPaymentUrl()!=null && mp3file.getId3v2Tag().getPaymentUrl().equals("lyricsReady")) {
                             writeFile(String.valueOf(f.getAbsoluteFile()),"", "есть тег lyricsReady", "lyricsReadyERRORS");
                             return;
@@ -351,6 +352,7 @@ public class Main {
         Mp3File mp3fileNew = null;
         try {
             mp3fileNew = new Mp3File(songPath);
+			obsoleteStage(mp3fileNew);
         } catch (IOException | UnsupportedTagException | InvalidDataException | IllegalArgumentException e) {
             System.err.println("ERROR: "  + e);
             writeFile(songPath, String.valueOf(e), "", "");
@@ -412,6 +414,49 @@ public class Main {
         System.out.println(bakFile.delete());
 
     }
+	
+	public static void obsoleteStage(Mp3File item){
+
+        if (item.getId3v2Tag().getObseleteFormat()){
+            String tempTitle = item.getId3v2Tag().getTitle();
+            String tempYear = item.getId3v2Tag().getYear();
+            String tempAlbum = item.getId3v2Tag().getAlbum();
+            String tempArtist = item.getId3v2Tag().getArtist();
+            String tempAlbumArtist = item.getId3v2Tag().getAlbumArtist();
+            int tempGenre = item.getId3v2Tag().getGenre();
+            String tempGenreDescription = item.getId3v2Tag().getGenreDescription();
+            String tempTrack = item.getId3v2Tag().getTrack();
+            byte[] tempAlbumCover = item.getId3v2Tag().getAlbumImage();
+            String tempMimeType = item.getId3v2Tag().getAlbumImageMimeType();
+            String tempLyrics = item.getId3v2Tag().getLyrics();
+            String tempLyricsReady = item.getId3v2Tag().getPaymentUrl();
+
+            ID3v24Tag id3v24Tag = new ID3v24Tag();
+            item.setId3v2Tag(id3v24Tag);
+
+            item.getId3v2Tag().setTitle(tempTitle);
+            item.getId3v2Tag().setYear(tempYear);
+            item.getId3v2Tag().setAlbum(tempAlbum);
+            item.getId3v2Tag().setArtist(tempArtist);
+            item.getId3v2Tag().setGenre(tempGenre);
+            item.getId3v2Tag().setGenreDescription(tempGenreDescription);
+            item.getId3v2Tag().setTrack(tempTrack);
+            item.getId3v2Tag().setAlbumImage(tempAlbumCover, tempMimeType);
+            item.getId3v2Tag().setAlbumArtist(tempAlbumArtist);
+            item.getId3v2Tag().setLyrics(tempLyrics);
+            item.getId3v2Tag().setPaymentUrl(tempLyricsReady);
+
+          //  item.getId3v2Tag().setArtist("ARTIST NEW OBSOLETE");
+
+            saveMp3(item, item.getFilename());
+
+        }
+//        else {
+//            //  System.out.println(item.getId3v2Tag().getGenre() + "  " + item.getId3v2Tag().getGenreDescription());
+//            item.getId3v2Tag().setArtist("ARTIST NEW not obsolete");
+//            saveMp3(item, item.getFilename());
+//        }
+}
 
 
     }
